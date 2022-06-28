@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import PostCard from '../components/PostCard';
 
 export default function SinglePost(props) {
     const { postId } = useParams();
     const [ post, setPost ] = useState({});
     const [ editMode, setEditMode ] = useState(false);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`https://kekambas-blog.herokuapp.com/blog/posts/${postId}`)
@@ -42,11 +44,28 @@ export default function SinglePost(props) {
             })
     }
 
+    const deletePost = () => {
+        let myHeaders = new Headers();
+        myHeaders.append('Authorization', `Bearer ${localStorage.getItem('token')}`)
+
+        fetch(`https://kekambas-blog.herokuapp.com/blog/posts/${postId}`, {
+            method: 'DELETE',
+            headers: myHeaders
+        }).then(res => {
+            if (res.ok){
+                props.flashMessage('The post has been deleted', 'info');
+                navigate('/')
+            } else {
+                props.flashMessage('You cannot delete this post', 'danger')
+            }
+        })
+    }
+
     return (
         <>
             <PostCard post={post} />
             <button className='btn btn-info w-50' onClick={()=>{setEditMode(!editMode)}}>Edit</button>
-            <button className='btn btn-danger w-50' onClick={()=>{}}>Delete</button>
+            <button className='btn btn-danger w-50' onClick={deletePost}>Delete</button>
             {editMode ? (
                 <form onSubmit={handleSubmit} className='mt-5'>
                     <div className='from-group'>
