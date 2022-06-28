@@ -15,11 +15,31 @@ export default class Home extends Component {
             .then(data => this.setState({posts:data}))
     }
 
+    sortPosts = (method) => {
+        const sortingMethods = {
+            byDateAsc: (a, b) => new Date(a.date_created) - new Date(b.date_created),
+            byDateDesc: (a, b) => new Date(b.date_created) - new Date(a.date_created),
+            byTitleAsc: (a, b) => a.title > b.title ? 1 : -1,
+            byTitleDesc: (a, b) => a.title > b.title ? -1 : 1,
+        }
+        let sortedPosts = [...this.state.posts].sort(sortingMethods[method])
+        this.setState({ posts: sortedPosts })
+    }
+
     render() {
         return (
             <>
                 <h1 className='text-center'>Kekambas Blog</h1>
                 <hr></hr>
+                <div className='offset-8 col-4'>
+                    <select onChange={(e) => this.sortPosts(e.target.value)} className='form-select'>
+                        <option>Sort Posts</option>
+                        <option value='byDateAsc'>By Date Ascending</option>
+                        <option value='byDateDesc'>By Date Descending</option>
+                        <option value='byTitleAsc'>By Title Ascending</option>
+                        <option value='byTitleDesc'>By Title Descending</option>
+                    </select>
+                </div>
                 {this.state.posts.map(p => <PostCard post={p} key={p.id} />)}
             </>
         )
