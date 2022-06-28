@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PostCard from '../components/PostCard';
 
-export default function SinglePost() {
+export default function SinglePost(props) {
     const { postId } = useParams();
     const [ post, setPost ] = useState({});
     const [ editMode, setEditMode ] = useState(false);
@@ -16,6 +16,30 @@ export default function SinglePost() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(e);
+
+        let myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json');
+        myHeaders.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
+
+        let data = JSON.stringify({
+            title: e.target.title.value,
+            content: e.target.content.value
+        })
+
+        fetch(`https://kekambas-blog.herokuapp.com/blog/posts/${postId}`,{
+            method: 'PUT',
+            headers: myHeaders,
+            body: data
+        }).then(res => res.json())
+            .then(data => {
+                if (data.error){
+                    props.flashMessage(data.error, 'danger')
+                } else {
+                    props.flashMessage(`${data.title} has been updated`, 'secondary')
+                    setPost(data)
+                    setEditMode(false)
+                }
+            })
     }
 
     return (
