@@ -33,6 +33,7 @@ export default class Login extends Component {
             if (data){
                 localStorage.setItem('token', data.token);
                 this.props.flashMessage('You have successfully logged in', 'success');
+                this.props.logUserIn();
                 this.setState({redirect: true});
             }
         })

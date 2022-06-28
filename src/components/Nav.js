@@ -12,8 +12,17 @@ export default function Nav(props) {
                 <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div className="navbar-nav">
                     <Link className="nav-link" to="/">Home</Link>
-                    <Link className="nav-link" to="/register">Register</Link>
-                    <Link className="nav-link" to="/login">Login</Link>
+                    { props.loggedIn ? (
+                        <>
+                            <Link className="nav-link" to="/create">Create a Post</Link>
+                            <Link className="nav-link" to="/" onClick={() => props.logUserOut()}>Log Out</Link>
+                        </>
+                        ) : (
+                        <>
+                            <Link className="nav-link" to="/register">Register</Link>
+                            <Link className="nav-link" to="/login">Login</Link>
+                        </>
+                    )}
                 </div>
                 </div>
             </div>
