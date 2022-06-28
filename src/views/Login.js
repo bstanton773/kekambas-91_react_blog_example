@@ -12,7 +12,32 @@ export default class Login extends Component {
     handleFormSubmit = (e) => {
         e.preventDefault();
         console.log(e);
-        this.setState({redirect: true})
+
+        let username = e.target.username.value;
+        let password = e.target.password.value;
+        let encodedUserPass = btoa(`${username}:${password}`);
+
+        let myHeaders = new Headers();
+        myHeaders.append('Authorization', `Basic ${encodedUserPass}`);
+
+        fetch('https://kekambas-blog.herokuapp.com/auth/token', {
+            method: "POST",
+            headers: myHeaders
+        }).then(res => {
+            if (res.ok){
+                return res.json();
+            } else {
+                this.props.flashMessage('Incorrect username/password', 'danger');
+            }
+        }).then(data => {
+            if (data){
+                localStorage.setItem('token', data.token);
+                this.props.flashMessage('You have successfully logged in', 'success');
+                this.setState({redirect: true});
+            }
+        })
+
+
     }
 
     render() {
