@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Register() {
+export default function Register(props) {
 
     let navigate = useNavigate();
 
@@ -14,7 +14,7 @@ export default function Register() {
         let confirmPass = e.target.confirmPass.value;
         console.log(password, confirmPass);
         if (password !== confirmPass){
-            console.log('Not the same');
+            props.flashMessage('Your passwords do not match', 'danger');
         } else {
             // Set up post request to /auth/users
             let myHeaders = new Headers();
@@ -32,8 +32,12 @@ export default function Register() {
                 body: data
             }).then(res => res.json())
                 .then(data => {
-                    console.log(data)
-                    navigate('/')
+                    if (data.error) {
+                        props.flashMessage(data.error, 'danger')
+                    } else {
+                        props.flashMessage(`${data.username} has been registered`, 'success')
+                        navigate('/')
+                    }
                 });
 
 
